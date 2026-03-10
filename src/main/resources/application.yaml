@@ -1,8 +1,12 @@
 #S pring properties
+
 spring:
   application:
     name: chat-bot
   ai:
+    chat:
+      client:
+        enabled: true # includes ChatClient bean
     ollama:
       base-url: http://localhost:11434 # Base URL of the local LLM (Docker)
       chat:

@@ -20,3 +20,10 @@ spring.ai.ollama.base-url=http://localhost:11434
 
 spring.ai.ollama.chat.options.model=mistral
 
+Endpoints
+GET http://localhost:8080/ai?userInput=Explain+embeddings+in+3+statements
+GET http://localhost:8080/ai/prompt?country=India&state=Karnataka
+GET http://localhost:8080/ai/structured-output?number=2&topic=world+war+II
+GET http://localhost:8080/ai/structured-output-native-advisor?number=3&topic=world+war+I
+GET http://localhost:8080/ai/using-tools?request=what%27s+today%27s+day+of+week+using+the+findDay+and+getCurrentDateTime+tools
+GET http://localhost:8080/ai/using-tools?request=What+is+today%27s+date%3F+Use+the+available+tools
