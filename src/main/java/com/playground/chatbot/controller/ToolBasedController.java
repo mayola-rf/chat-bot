@@ -1,6 +1,7 @@
 package com.playground.chatbot.controller;
 
-import com.playground.chatbot.tool.ChatBotTools;
+import com.playground.chatbot.tool.DateTimeTools;
+import com.playground.chatbot.tool.MathTools;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.ollama.OllamaChatModel;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,9 +12,9 @@ public class ToolBasedController {
 
     private final ChatClient chatClientWithTool;
 
-    public ToolBasedController(OllamaChatModel ollamaChatModel, ChatBotTools chatBotTools) {
+    public ToolBasedController(OllamaChatModel ollamaChatModel, DateTimeTools chatBotTools, MathTools mathTools) {
         this.chatClientWithTool = ChatClient.builder(ollamaChatModel)
-                .defaultTools(chatBotTools)
+                .defaultTools(chatBotTools, mathTools)
                 .build();
     }
 
@@ -21,23 +22,9 @@ public class ToolBasedController {
     public String usingTools(String request) {
         return this.chatClientWithTool.prompt()
                 .system(s -> s.text("""
-                        You are an assistant.
-                        For any question about current date or time and any questions related to math calculations,
-                        you MUST call the available tools.
-                        Do not guess the answer yourself.
-                        """))
-                .user(u -> u.text(request))
-                .call()
-                .content();
-    }
-    @GetMapping("/ai/using-tools-callback")
-    public String usingToolsCallback(String request) {
-        return this.chatClientWithTool.prompt()
-                .system(s -> s.text("""
-                        You are an assistant.
-                        For any question about current date or time and any questions related to math calculations,
-                        you MUST call the available tools.
-                        Do not guess the answer yourself.
+                        You are super assistant. Do not guess the answer yourself.
+                        1. For any question about current date or time, you MUST call the available DateTimeTools.
+                        2. For any question on math calculations, you MUST call the available MathTools.
                         """))
                 .user(u -> u.text(request))
                 .call()

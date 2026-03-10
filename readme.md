@@ -27,3 +27,7 @@ GET http://localhost:8080/ai/structured-output?number=2&topic=world+war+II
 GET http://localhost:8080/ai/structured-output-native-advisor?number=3&topic=world+war+I
 GET http://localhost:8080/ai/using-tools?request=what%27s+today%27s+day+of+week+using+the+findDay+and+getCurrentDateTime+tools
 GET http://localhost:8080/ai/using-tools?request=What+is+today%27s+date%3F+Use+the+available+tools
+GET http://localhost:8080/ai/using-tools?request=add 3 and 5
+GET http://localhost:8080/ai/using-tools?request=get current date and add 5 days
+
+

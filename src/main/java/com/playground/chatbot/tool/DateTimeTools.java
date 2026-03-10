@@ -6,22 +6,24 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.security.SecureRandom;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Component
-public class ChatBotTools {
+public class DateTimeTools {
 
-    @Tool(name = "getCurrentDateTime", description = "get my current date")
-    public String getCurrentDateTime() {
+    @Tool(name = "getCurrentDate", description = "get current date")
+    public String getCurrentDate() {
         System.out.println("LLM looking for current date-time");
-        return LocalDateTime.now().atZone(LocaleContextHolder.getTimeZone().toZoneId()).toString();
+        return LocalDate.now().toString();
     }
 
-    @Tool(name = "addDays", description = "Add days to a date")
-    public String addDays(int day, String date) {
+    @Tool(name = "addDays", description = "Add days to date")
+    public String addDays(@ToolParam(description = "Days") int days,
+                          @ToolParam(description = "Date") String date) {
         System.out.println("LLM looking to add days to date");
-        return LocalDateTime.parse(date).plusDays(day).toString();
+        return LocalDate.parse(date).plusDays(days).toString();
     }
 
     @Tool(name = "findDay", description = "Find day of the week from given date")
@@ -30,13 +32,13 @@ public class ChatBotTools {
         return LocalDateTime.parse(dt).getDayOfWeek().name();
     }
 
-    @Tool(name = "getCountry", description = "Get current country of the user")
+    @Tool(name = "getCountry", description = "Get my country")
     public String getCountry() {
         System.out.println("LLM looking for current country of the User");
         return LocaleContextHolder.getLocale().getCountry();
     }
 
-    @Tool(name = "getPopulation", description = "Get population of any given country")
+    @Tool(name = "getPopulation", description = "Get population of country")
     public long getPopulation(String country) {
         System.out.println("LLM looking population of " + country);
         if (Objects.equals(country, "India")) {
@@ -44,11 +46,5 @@ public class ChatBotTools {
         } else {
             return new SecureRandom().nextLong();
         }
-    }
-
-    @Tool(name = "addTwoNumbers", description = "Add two numbers")
-    public int add(int a, int b) {
-        System.out.println("LLM is using this tool to calculate the sum of " + a + " and " + b);
-        return a + b;
     }
 }
