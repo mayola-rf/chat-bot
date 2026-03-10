@@ -1,0 +1,20 @@
+#S pring properties
+spring:
+  application:
+    name: chat-bot
+  ai:
+    ollama:
+      base-url: http://localhost:11434 # Base URL of the local LLM (Docker)
+      chat:
+        options:
+          model: mistral # Model to use
+    #    openai:
+    #      api-key:
+#    google:
+#      genai:
+#        api-key:
+
+# chat-bot Service properties
+chatbot:
+  cli:
+    enabled: false
