@@ -16,4 +16,10 @@ public class MathTools {
         System.out.println("LLM is using this tool to calculate the sum of " + a + " and " + b);
         return a + b;
     }
+
+    @Tool(name = "multiplyTwoNumbers", description = "Multiply two numbers")
+    public int multiply(int a, int b) {
+        System.out.println("LLM is using this tool to calculate the product of " + a + " and " + b);
+        return a * b;
+    }
 }
