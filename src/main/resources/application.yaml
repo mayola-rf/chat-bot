@@ -11,7 +11,11 @@ spring:
       base-url: http://localhost:11434 # Base URL of the local LLM (Docker)
       chat:
         options:
-          model: qwen2.5 # Model to use
+          model: qwen2.5 # - accurate tool calling
+#         model: mistral # - not very accurate
+      embedding:
+        options:
+          model: qwen3-embedding # default = mxbai-embed-large
     #    openai:
     #      api-key:
 #    google:
