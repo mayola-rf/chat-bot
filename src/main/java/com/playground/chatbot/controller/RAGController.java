@@ -27,6 +27,9 @@ public class RAGController {
         this.ollamaChatModel = ollamaChatModel;
         chatClient = ChatClient.builder(ollamaChatModel).build();
         vectorStore = SimpleVectorStore.builder(ollamaEmbeddingModel).build();
+    }
+
+    private void seedVectorStore() {
         vectorStore.add(List.of(Document.builder()
                         .text("Customer data should not be stored for more than 30 days")
                         // country == 'UK' && year >= 2020 && isActive == true
@@ -45,6 +48,7 @@ public class RAGController {
 
     @GetMapping
     public String generateRAGResponse(String text) {
+        seedVectorStore();
         return this.chatClient.prompt(text)
                 .advisors(QuestionAnswerAdvisor.builder(vectorStore).build())
                 .user(text)
@@ -53,6 +57,7 @@ public class RAGController {
 
     @GetMapping("/filters")
     public String generateRAGResponseWithFilter(String text) {
+        seedVectorStore();
         ChatClient chatClient1 = ChatClient.builder(ollamaChatModel)
                 .defaultAdvisors(QuestionAnswerAdvisor.builder(vectorStore)
 //                        .searchRequest(SearchRequest.builder().similarityThreshold(0.8d).topK(5)
