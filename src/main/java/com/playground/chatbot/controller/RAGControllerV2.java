@@ -53,4 +53,9 @@ public class RAGControllerV2 {
     public RAGResponse askAfterHybridRank(@RequestBody String query) {
         return queryService.askAfterHybridRank(query);
     }
+
+    @PostMapping("/evaluate-story")
+    public void askAfterHybridRank() {
+        queryService.evaluateStoryResponses();
+    }
 }

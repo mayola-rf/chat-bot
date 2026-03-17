@@ -1,5 +1,6 @@
 package com.playground.chatbot.service.rag;
 
+import com.playground.chatbot.request.TestCase;
 import com.playground.chatbot.response.RAGResponse;
 import com.playground.chatbot.response.Source;
 import org.jspecify.annotations.NonNull;
@@ -206,5 +207,22 @@ public class QueryService {
 
         Query transformedQuery = queryTransformer.transform(query);
         return transformedQuery.text();
+    }
+
+    public void evaluateStoryResponses() {
+        List<TestCase> testCases = new ArrayList<>();
+        testCases.add(new TestCase("Who was a fool? Sheep or the Wolf? How did all the sheep got saved from the wolf?", "The Wolf in Sheep’s Clothing", 1));
+        testCases.add(new TestCase("Who was a fool? Sheep or the Wolf? How did all the sheep got saved from the wolf?", "The Thirsty Crow", 3));
+        testCases.add(new TestCase("What action did the crow take to drink water?", "The Thirsty Crow", 1));
+        testCases.add(new TestCase("What did the crow eat?", "The Thirsty Crow", 1));
+
+        for (TestCase testCase : testCases) {
+            RAGResponse ragResponse = askAfterHybridRank(testCase.query());
+            Source source = ragResponse.sources().get(testCase.rank() - 1);
+            log.info("Query: {}", testCase.query());
+            log.info("Expected: {}", testCase.title());
+            log.info("Found: {}", source.title());
+            log.info("Rank: {}", source.citationId());
+        }
     }
 }
