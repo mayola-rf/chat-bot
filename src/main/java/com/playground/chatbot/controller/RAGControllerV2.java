@@ -25,7 +25,7 @@ public class RAGControllerV2 {
     private PathMatcher pathMatcher;
 
     @PostMapping("/ingest")
-    public int ingest(@RequestBody Story[] payload) {
+    public int ingestStories(@RequestBody Story[] payload) {
         return ingestionService.ingestStories(payload);
     }
 
@@ -42,5 +42,10 @@ public class RAGControllerV2 {
     @PostMapping("/manual-retrieval/ask")
     public RAGResponse askWithManualRetrieval(@RequestBody String query) {
         return queryService.queryWithManualRetrieval(query);
+    }
+
+    @PostMapping("/rewrite-ask")
+    public RAGResponse askAfterRewritingQuery(@RequestBody String query) {
+        return queryService.queryAfterRewritingPrompt(query);
     }
 }
