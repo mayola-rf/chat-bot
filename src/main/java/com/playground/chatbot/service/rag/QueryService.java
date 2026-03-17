@@ -7,25 +7,21 @@ import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.api.Advisor;
 import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.ollama.OllamaChatModel;
-import org.springframework.ai.ollama.OllamaEmbeddingModel;
 import org.springframework.ai.rag.Query;
 import org.springframework.ai.rag.preretrieval.query.transformation.QueryTransformer;
 import org.springframework.ai.rag.preretrieval.query.transformation.RewriteQueryTransformer;
 import org.springframework.ai.template.st.StTemplateRenderer;
-import org.springframework.ai.transformer.splitter.TokenTextSplitter;
 import org.springframework.ai.vectorstore.SearchRequest;
-import org.springframework.ai.vectorstore.SimpleVectorStore;
 import org.springframework.ai.vectorstore.VectorStore;
+import org.springframework.ai.vectorstore.pgvector.PgVectorStore;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class QueryService {

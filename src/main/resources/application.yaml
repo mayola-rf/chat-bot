@@ -1,6 +1,10 @@
 #S pring properties
 
 spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: postgres
   application:
     name: chat-bot
   ai:
@@ -12,10 +16,16 @@ spring:
       chat:
         options:
           model: qwen2.5 # - accurate tool calling
-#         model: mistral # - not very accurate
+      #         model: mistral # - not very accurate
       embedding:
         options:
           model: qwen3-embedding # default = mxbai-embed-large
+    vectorstore:
+      pgvector:
+        index-type: HNSW
+        distance-type: COSINE_DISTANCE
+        dimensions: 1536
+        max-document-batch-size: 10000 # Optional: Maximum number of documents per batch
     #    openai:
     #      api-key:
 #    google:

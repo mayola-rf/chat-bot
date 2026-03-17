@@ -53,6 +53,12 @@
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-rag</artifactId>
         </dependency>
+
+        <!-- vector db -->
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-starter-vector-store-pgvector</artifactId>
+        </dependency>
         <!-- test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

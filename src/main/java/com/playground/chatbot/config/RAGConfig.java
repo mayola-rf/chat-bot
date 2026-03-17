@@ -10,10 +10,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RAGConfig {
 
-    @Bean
-    VectorStore vectorStore(final OllamaEmbeddingModel ollamaEmbeddingModel) {
-        return SimpleVectorStore.builder(ollamaEmbeddingModel).build();
-    }
+//    @Bean // pgvector is added as the vector db now
+//    VectorStore simpleVectorStore(final OllamaEmbeddingModel ollamaEmbeddingModel) {
+//        return SimpleVectorStore.builder(ollamaEmbeddingModel).build();
+//    }
 
     @Bean
     TokenTextSplitter tokenTextSplitter() {
