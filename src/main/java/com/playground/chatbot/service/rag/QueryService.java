@@ -23,10 +23,7 @@ import org.springframework.ai.vectorstore.SimpleVectorStore;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -84,6 +81,51 @@ public class QueryService {
 
     public RAGResponse queryWithManualRetrieval(final String payload) {
         List<Document> documents = getDocuments(payload);
+        return getRagResponse(payload, documents);
+    }
+
+    private PromptTemplate promptTemplate() {
+        return PromptTemplate.builder()
+                .renderer(StTemplateRenderer.builder()
+                        .startDelimiterToken('<')
+                        .endDelimiterToken('>')
+                        .build())
+                .template("""
+                        You are a question-answering system.
+                        
+                        Use ONLY the information present in the context below.
+                        Do NOT use prior knowledge.
+                        Do NOT infer beyond the context.
+                        If the answer is not explicitly in the context, reply exactly:
+                        I don't know.
+                        
+                        Context:
+                        <question_answer_context>
+                        
+                        Question:
+                        <query>
+                        
+                        Answer with citations like [1], [2] only if those source numbers are present in the context.
+                        Prefer higher-ranked sources when answering. Ignore irrelevant sources.
+                        """)
+                .build();
+    }
+
+    public RAGResponse queryAfterRewritingPrompt(String query) {
+        String rewrittenQuery = rewriteQuery(query);
+        log.info("Rewritten Query: {}", rewrittenQuery);
+        return queryWithManualRetrieval(rewrittenQuery);
+    }
+
+    public RAGResponse askAfterHybridRank(String query) {
+        String rewrittenQuery = rewriteQuery(query);
+        List<Document> documents = getDocuments(rewrittenQuery);
+        List<Document> reRanked = documents.stream().sorted(Comparator.comparingDouble(document -> getScore(query, (Document) document)).reversed())
+                .toList();
+        return getRagResponse(query, reRanked);
+    }
+
+    private @NonNull RAGResponse getRagResponse(String query, List<Document> documents) {
         log.info("fetched {} documents for the given payload", documents.size());
         StringBuilder context = new StringBuilder();
         List<Source> sources = new ArrayList<>();
@@ -101,9 +143,10 @@ public class QueryService {
             sources.add(new Source(i + 1, document.getText(), title));
             log.info("Rank {} - Title: {}", i + 1, title);
             log.info("Chunk: {}", document.getText());
+            log.info("Score: {}", document.getScore());
         }
         Prompt prompt = promptTemplate()
-                .create(Map.of("query", payload, "question_answer_context", context));
+                .create(Map.of("query", query, "question_answer_context", context));
         log.info("Final prompt: ", prompt);
         String result = Objects.requireNonNull(ollamaChatModel
                 .call(prompt)
@@ -114,37 +157,29 @@ public class QueryService {
         return ragResponse;
     }
 
-    private PromptTemplate promptTemplate() {
-        return PromptTemplate.builder()
-                .renderer(StTemplateRenderer.builder()
-                        .startDelimiterToken('<')
-                        .endDelimiterToken('>')
-                        .build())
-                .template("""
-                    You are a question-answering system.
-
-                    Use ONLY the information present in the context below.
-                    Do NOT use prior knowledge.
-                    Do NOT infer beyond the context.
-                    If the answer is not explicitly in the context, reply exactly:
-                    I don't know.
-
-                    Context:
-                    <question_answer_context>
-
-                    Question:
-                    <query>
-
-                    Answer with citations like [1], [2] only if those source numbers are present in the context.
-                    Prefer higher-ranked sources when answering. Ignore irrelevant sources.
-                    """)
-                .build();
+    private double getScore(String query, Document document) {
+        double normalizedVector = document.getScore() < 1 ? document.getScore() : (1.0 / (1.0 + document.getScore()));
+        double keywordScore = keywordScore(query, document);
+        double finalScore = 0.7 * normalizedVector + 0.3 * keywordScore;
+        log.info("Final Score for document: {} is {}. before: {}", document.getMetadata().get("title"), finalScore, document.getScore());
+        return finalScore;
     }
 
-    public RAGResponse queryAfterRewritingPrompt(String query) {
-        String rewrittenQuery = rewriteQuery(query);
-        log.info("Rewritten Query: {}", rewrittenQuery);
-        return queryWithManualRetrieval(rewrittenQuery);
+    private double keywordScore(String query, Document doc) {
+        String q = query.toLowerCase();
+        String title = String.valueOf(doc.getMetadata().getOrDefault("title", "")).toLowerCase();
+        String text = doc.getText().toLowerCase();
+
+        double score = 0.0;
+
+        for (String token : q.split("\\W+")) {
+            if (token.isBlank()) continue;
+
+            if (title.contains(token)) score += 2.0;   // strong signal
+            if (text.contains(token)) score += 1.0;
+        }
+
+        return score;
     }
 
     private String rewriteQuery(String originalQuery) {

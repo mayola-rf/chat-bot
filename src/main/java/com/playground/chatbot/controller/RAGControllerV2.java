@@ -48,4 +48,9 @@ public class RAGControllerV2 {
     public RAGResponse askAfterRewritingQuery(@RequestBody String query) {
         return queryService.queryAfterRewritingPrompt(query);
     }
+
+    @PostMapping("/hybrid-ask")
+    public RAGResponse askAfterHybridRank(@RequestBody String query) {
+        return queryService.askAfterHybridRank(query);
+    }
 }
